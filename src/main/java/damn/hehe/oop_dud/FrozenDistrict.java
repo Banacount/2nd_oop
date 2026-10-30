@@ -4,28 +4,44 @@
  */
 package damn.hehe.oop_dud;
 import javax.swing.*;
+import java.util.ArrayList;
 
 /**
  *
  * @author excalibur
  */
 public class FrozenDistrict extends javax.swing.JDialog {
-	static int[] PickedList = new int[9];
-	int pickedListIndex = 0;
+	static ArrayList<int[]> PickedList = new ArrayList<>();
+	static int productId = 0;
 
     static ProductItem[] products;
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrozenDistrict.class.getName());
     
-	void updatePickedList () {
-		// Clear all the values
-		for (int n = 0; n < PickedList.length; n++) PickedList[n] = -1;
+	static void updatePickedList () {
+		// Detect if item is on the list
+		for (ProductItem item : products) {
+			int inPickedList = -1;
 
-		// Populate again
-		for (int i = 0; i < PickedList.length; i++) {
-			ProductItem item = products[i];
+			for (int[] picked : PickedList) {
+				if (picked[1] <= 0) {
+					PickedList.remove(picked);
+				}
+				int idInPickedList = picked[0];
+				if (idInPickedList == item.id) 
+					inPickedList = PickedList.indexOf(picked);
+			}
 
-			if (item.Quantity > 0) PickedList[pickedListIndex++] = i; 
+			// If already in list just set
+			if (inPickedList > -1) {
+				PickedList.set(inPickedList, new int[]{item.id, item.Quantity});
+				continue;
+			}
+
+			// Add if not on the list
+			if (item.Quantity > 0) PickedList.add(new int[]{item.id, item.Quantity});
 		}
+
+		DebugFunctions.printPickedList();
 	}
     /**
      * Creates new form TestGUI
@@ -109,7 +125,7 @@ public class FrozenDistrict extends javax.swing.JDialog {
         product_price_9 = new javax.swing.JLabel();
         CashierMenu = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        orderListTextArea = new javax.swing.JTextArea();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
@@ -641,15 +657,15 @@ public class FrozenDistrict extends javax.swing.JDialog {
 
         CashierMenu.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(44, 126, 246), 2));
 
-        jTextArea1.setBackground(new java.awt.Color(218, 233, 250));
-        jTextArea1.setColumns(20);
-        jTextArea1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font", 0, 13)); // NOI18N
-        jTextArea1.setForeground(new java.awt.Color(44, 126, 246));
-        jTextArea1.setRows(5);
-        jTextArea1.setText("Total Thingy...");
-        jTextArea1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(73, 152, 199)));
-        jTextArea1.setMargin(new java.awt.Insets(7, 7, 7, 6));
-        jScrollPane1.setViewportView(jTextArea1);
+        orderListTextArea.setEditable(false);
+        orderListTextArea.setBackground(new java.awt.Color(218, 233, 250));
+        orderListTextArea.setColumns(20);
+        orderListTextArea.setFont(new java.awt.Font("Adwaita Sans", 0, 13)); // NOI18N
+        orderListTextArea.setForeground(new java.awt.Color(44, 126, 246));
+        orderListTextArea.setRows(5);
+        orderListTextArea.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(73, 152, 199)));
+        orderListTextArea.setMargin(new java.awt.Insets(7, 7, 7, 6));
+        jScrollPane1.setViewportView(orderListTextArea);
 
         jButton1.setBackground(new java.awt.Color(218, 233, 250));
         jButton1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font", 0, 13)); // NOI18N
@@ -779,7 +795,7 @@ public class FrozenDistrict extends javax.swing.JDialog {
             .addGroup(CashierMenuLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, Short.MAX_VALUE)
                 .addComponent(InputPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(InputPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -942,19 +958,19 @@ public class FrozenDistrict extends javax.swing.JDialog {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JButton product_button_1;
-    private javax.swing.JButton product_button_2;
-    private javax.swing.JButton product_button_3;
+    private javax.swing.JTextArea orderListTextArea;
+    private static javax.swing.JButton product_button_1;
+    private static javax.swing.JButton product_button_2;
+    private static javax.swing.JButton product_button_3;
     private static javax.swing.JButton product_button_4;
     private static javax.swing.JButton product_button_5;
     private static javax.swing.JButton product_button_6;
     private static javax.swing.JButton product_button_7;
     private static javax.swing.JButton product_button_8;
     private static javax.swing.JButton product_button_9;
-    private javax.swing.JLabel product_price_1;
-    private javax.swing.JLabel product_price_2;
-    private javax.swing.JLabel product_price_3;
+    private static javax.swing.JLabel product_price_1;
+    private static javax.swing.JLabel product_price_2;
+    private static javax.swing.JLabel product_price_3;
     private static javax.swing.JLabel product_price_4;
     private static javax.swing.JLabel product_price_5;
     private static javax.swing.JLabel product_price_6;
@@ -973,6 +989,7 @@ public class FrozenDistrict extends javax.swing.JDialog {
 class ProductItem {
     float Price;
     int Quantity = 0;
+	int id = FrozenDistrict.productId++;
     String Name;
     javax.swing.JLabel PriceLabel;
     javax.swing.JButton ProductButton;
@@ -1003,6 +1020,7 @@ class ProductItem {
 				this.getTextPrice() : 
 				this.getTextPrice() + " * " + Quantity);
 		PriceLabel.setText(result);
+		FrozenDistrict.updatePickedList();
 	}
 
     void productAction () {
@@ -1018,4 +1036,15 @@ class ProductItem {
 			JOptionPane.showMessageDialog(null, "Invalid quantity value.", "Error quantity", JOptionPane.ERROR_MESSAGE);
 		}
     }
+}
+
+class DebugFunctions {
+	static void printPickedList () {
+		for (int[] value : FrozenDistrict.PickedList) {
+			int itemId = value[0];
+			int itemQuantity = value[1];
+
+			System.out.printf("{%d, %d}\n", itemId, itemQuantity);
+		}
+	}
 }
