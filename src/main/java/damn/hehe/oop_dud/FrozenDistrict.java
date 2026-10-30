@@ -17,6 +17,20 @@ public class FrozenDistrict extends javax.swing.JDialog {
     static ProductItem[] products;
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrozenDistrict.class.getName());
     
+	static void showToOrderList () {
+		String overAll = "";
+
+		overAll += "Order List\n\n";
+		for (int[] picked : PickedList) {
+			ProductItem item = products[picked[0]];
+			String details = String.format("%-14s %.2f x %d", item.Name, item.Price, item.Quantity);
+			String separator = "-----------";
+			String subTotal = String.format(" %.2f ", item.Price*item.Quantity);
+			overAll += String.format("%-30s %s %-9s \n", details, separator, subTotal);
+		}
+
+		orderListTextArea.setText(overAll);
+	}
 	static void updatePickedList () {
 		// Detect if item is on the list
 		for (ProductItem item : products) {
@@ -660,7 +674,7 @@ public class FrozenDistrict extends javax.swing.JDialog {
         orderListTextArea.setEditable(false);
         orderListTextArea.setBackground(new java.awt.Color(218, 233, 250));
         orderListTextArea.setColumns(20);
-        orderListTextArea.setFont(new java.awt.Font("Adwaita Sans", 0, 13)); // NOI18N
+        orderListTextArea.setFont(new java.awt.Font("Adwaita Sans", 0, 10)); // NOI18N
         orderListTextArea.setForeground(new java.awt.Color(44, 126, 246));
         orderListTextArea.setRows(5);
         orderListTextArea.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(73, 152, 199)));
@@ -958,7 +972,7 @@ public class FrozenDistrict extends javax.swing.JDialog {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea orderListTextArea;
+    private static javax.swing.JTextArea orderListTextArea;
     private static javax.swing.JButton product_button_1;
     private static javax.swing.JButton product_button_2;
     private static javax.swing.JButton product_button_3;
@@ -1021,6 +1035,7 @@ class ProductItem {
 				this.getTextPrice() + " * " + Quantity);
 		PriceLabel.setText(result);
 		FrozenDistrict.updatePickedList();
+		FrozenDistrict.showToOrderList();
 	}
 
     void productAction () {
