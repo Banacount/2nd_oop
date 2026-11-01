@@ -13,22 +13,20 @@ import java.util.ArrayList;
 public class FrozenDistrict extends javax.swing.JDialog {
 	static ArrayList<int[]> PickedList = new ArrayList<>();
 	static int productId = 0;
-
+	static float PickedListSubtotal = 0;
     static ProductItem[] products;
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrozenDistrict.class.getName());
     
+	// My functions block
 	static void showToOrderList () {
 		String overAll = "";
-
 		overAll += "Order List\n\n";
 		for (int[] picked : PickedList) {
 			ProductItem item = products[picked[0]];
-			String details = String.format("%-14s %.2f x %d", item.Name, item.Price, item.Quantity);
-			String separator = "-----------";
-			String subTotal = String.format(" %.2f ", item.Price*item.Quantity);
-			overAll += String.format("%-30s %s %-9s \n", details, separator, subTotal);
+			String row = String.format("%-15.15s %7.2f x %2d ------- %8.2f\n",
+										item.Name, item.Price, item.Quantity, item.Price*item.Quantity);
+			overAll += row;
 		}
-
 		orderListTextArea.setText(overAll);
 	}
 	static void updatePickedList () {
@@ -36,27 +34,47 @@ public class FrozenDistrict extends javax.swing.JDialog {
 		for (ProductItem item : products) {
 			int inPickedList = -1;
 
+			// Remove 0 quantity items
 			for (int[] picked : PickedList) {
 				if (picked[1] <= 0) {
 					PickedList.remove(picked);
+					break;
 				}
+			}
+			// Check if item is already in PickedList
+			for (int[] picked : PickedList) {
 				int idInPickedList = picked[0];
 				if (idInPickedList == item.id) 
 					inPickedList = PickedList.indexOf(picked);
 			}
-
 			// If already in list just set
 			if (inPickedList > -1) {
 				PickedList.set(inPickedList, new int[]{item.id, item.Quantity});
 				continue;
 			}
-
 			// Add if not on the list
-			if (item.Quantity > 0) PickedList.add(new int[]{item.id, item.Quantity});
+			if (item.Quantity > 0 && inPickedList < 0) 
+				PickedList.add(new int[]{item.id, item.Quantity});
 		}
-
+		showToOrderList();
 		DebugFunctions.printPickedList();
 	}
+	static void refreshPickedListSubtotal () {
+		PickedListSubtotal = 0;
+		for (ProductItem item : products) {
+			float total = item.Price*item.Quantity;
+			PickedListSubtotal += total;
+		}
+
+		TotalInput.setText(String.valueOf(PickedListSubtotal));
+	}
+	static void setProductsActionState (boolean isEnabled) {
+		for (ProductItem item : products) {
+			item.ProductButton.setEnabled(isEnabled);
+		}
+	}
+	// My functions endblock
+
     /**
      * Creates new form TestGUI
      */
@@ -140,18 +158,18 @@ public class FrozenDistrict extends javax.swing.JDialog {
         CashierMenu = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         orderListTextArea = new javax.swing.JTextArea();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        NextButton = new javax.swing.JButton();
+        OkButton = new javax.swing.JButton();
+        SalesInventoryButton = new javax.swing.JButton();
         InputPanel1 = new javax.swing.JPanel();
         InputLabel1 = new javax.swing.JLabel();
-        Input1 = new javax.swing.JTextField();
+        TotalInput = new javax.swing.JTextField();
         InputPanel2 = new javax.swing.JPanel();
         InputLabel2 = new javax.swing.JLabel();
-        Input2 = new javax.swing.JTextField();
+        CashInput = new javax.swing.JTextField();
         InputPanel3 = new javax.swing.JPanel();
         InputLabel3 = new javax.swing.JLabel();
-        Input3 = new javax.swing.JTextField();
+        ChangeInput = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -674,39 +692,41 @@ public class FrozenDistrict extends javax.swing.JDialog {
         orderListTextArea.setEditable(false);
         orderListTextArea.setBackground(new java.awt.Color(218, 233, 250));
         orderListTextArea.setColumns(20);
-        orderListTextArea.setFont(new java.awt.Font("Adwaita Sans", 0, 10)); // NOI18N
+        orderListTextArea.setFont(new java.awt.Font("Adwaita Mono", 0, 12)); // NOI18N
         orderListTextArea.setForeground(new java.awt.Color(44, 126, 246));
         orderListTextArea.setRows(5);
         orderListTextArea.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(73, 152, 199)));
         orderListTextArea.setMargin(new java.awt.Insets(7, 7, 7, 6));
         jScrollPane1.setViewportView(orderListTextArea);
 
-        jButton1.setBackground(new java.awt.Color(218, 233, 250));
-        jButton1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font", 0, 13)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(44, 126, 246));
-        jButton1.setText("Next");
-        jButton1.addActionListener(this::jButton1ActionPerformed);
+        NextButton.setBackground(new java.awt.Color(218, 233, 250));
+        NextButton.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font", 0, 13)); // NOI18N
+        NextButton.setForeground(new java.awt.Color(44, 126, 246));
+        NextButton.setText("Next");
+        NextButton.setEnabled(false);
+        NextButton.addActionListener(this::NextButtonActionPerformed);
 
-        jButton2.setBackground(new java.awt.Color(218, 233, 250));
-        jButton2.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font", 0, 13)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(44, 126, 246));
-        jButton2.setText("Ok");
-        jButton2.addActionListener(this::jButton2ActionPerformed);
+        OkButton.setBackground(new java.awt.Color(218, 233, 250));
+        OkButton.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font", 0, 13)); // NOI18N
+        OkButton.setForeground(new java.awt.Color(44, 126, 246));
+        OkButton.setText("Ok");
+        OkButton.addActionListener(this::OkButtonActionPerformed);
 
-        jButton3.setBackground(new java.awt.Color(218, 233, 250));
-        jButton3.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font", 0, 13)); // NOI18N
-        jButton3.setForeground(new java.awt.Color(44, 126, 246));
-        jButton3.setText("Sales Inventory");
-        jButton3.addActionListener(this::jButton3ActionPerformed);
+        SalesInventoryButton.setBackground(new java.awt.Color(218, 233, 250));
+        SalesInventoryButton.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font", 0, 13)); // NOI18N
+        SalesInventoryButton.setForeground(new java.awt.Color(44, 126, 246));
+        SalesInventoryButton.setText("Sales Inventory");
+        SalesInventoryButton.addActionListener(this::SalesInventoryButtonActionPerformed);
 
         InputLabel1.setFont(new java.awt.Font("BigBlueTerm437 Nerd Font", 1, 18)); // NOI18N
         InputLabel1.setForeground(new java.awt.Color(44, 126, 246));
         InputLabel1.setText("Total");
 
-        Input1.setBackground(new java.awt.Color(218, 233, 250));
-        Input1.setFont(new java.awt.Font("Adwaita Sans", 0, 13)); // NOI18N
-        Input1.setText("0.00");
-        Input1.addActionListener(this::Input1ActionPerformed);
+        TotalInput.setEditable(false);
+        TotalInput.setBackground(new java.awt.Color(218, 233, 250));
+        TotalInput.setFont(new java.awt.Font("Adwaita Sans", 0, 13)); // NOI18N
+        TotalInput.setText("0.00");
+        TotalInput.addActionListener(this::TotalInputActionPerformed);
 
         javax.swing.GroupLayout InputPanel1Layout = new javax.swing.GroupLayout(InputPanel1);
         InputPanel1.setLayout(InputPanel1Layout);
@@ -716,7 +736,7 @@ public class FrozenDistrict extends javax.swing.JDialog {
                 .addContainerGap()
                 .addComponent(InputLabel1)
                 .addGap(18, 18, 18)
-                .addComponent(Input1))
+                .addComponent(TotalInput))
         );
         InputPanel1Layout.setVerticalGroup(
             InputPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -724,7 +744,7 @@ public class FrozenDistrict extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(InputPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(InputLabel1)
-                    .addComponent(Input1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(TotalInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -732,10 +752,10 @@ public class FrozenDistrict extends javax.swing.JDialog {
         InputLabel2.setForeground(new java.awt.Color(44, 126, 246));
         InputLabel2.setText("Cash");
 
-        Input2.setBackground(new java.awt.Color(218, 233, 250));
-        Input2.setFont(new java.awt.Font("Adwaita Sans", 0, 13)); // NOI18N
-        Input2.setText("0.00");
-        Input2.addActionListener(this::Input2ActionPerformed);
+        CashInput.setBackground(new java.awt.Color(218, 233, 250));
+        CashInput.setFont(new java.awt.Font("Adwaita Sans", 0, 13)); // NOI18N
+        CashInput.setText("0.00");
+        CashInput.addActionListener(this::CashInputActionPerformed);
 
         javax.swing.GroupLayout InputPanel2Layout = new javax.swing.GroupLayout(InputPanel2);
         InputPanel2.setLayout(InputPanel2Layout);
@@ -744,8 +764,8 @@ public class FrozenDistrict extends javax.swing.JDialog {
             .addGroup(InputPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(InputLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
-                .addComponent(Input2, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
+                .addComponent(CashInput, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         InputPanel2Layout.setVerticalGroup(
             InputPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -753,7 +773,7 @@ public class FrozenDistrict extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(InputPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(InputLabel2)
-                    .addComponent(Input2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(CashInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -761,10 +781,11 @@ public class FrozenDistrict extends javax.swing.JDialog {
         InputLabel3.setForeground(new java.awt.Color(44, 126, 246));
         InputLabel3.setText("Change");
 
-        Input3.setBackground(new java.awt.Color(218, 233, 250));
-        Input3.setFont(new java.awt.Font("Adwaita Sans", 0, 13)); // NOI18N
-        Input3.setText("0.00");
-        Input3.addActionListener(this::Input3ActionPerformed);
+        ChangeInput.setEditable(false);
+        ChangeInput.setBackground(new java.awt.Color(218, 233, 250));
+        ChangeInput.setFont(new java.awt.Font("Adwaita Sans", 0, 13)); // NOI18N
+        ChangeInput.setText("0.00");
+        ChangeInput.addActionListener(this::ChangeInputActionPerformed);
 
         javax.swing.GroupLayout InputPanel3Layout = new javax.swing.GroupLayout(InputPanel3);
         InputPanel3.setLayout(InputPanel3Layout);
@@ -774,7 +795,7 @@ public class FrozenDistrict extends javax.swing.JDialog {
                 .addContainerGap()
                 .addComponent(InputLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(Input3))
+                .addComponent(ChangeInput))
         );
         InputPanel3Layout.setVerticalGroup(
             InputPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -782,7 +803,7 @@ public class FrozenDistrict extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(InputPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(InputLabel3)
-                    .addComponent(Input3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(ChangeInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -794,12 +815,12 @@ public class FrozenDistrict extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(CashierMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(InputPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(SalesInventoryButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane1)
                     .addGroup(CashierMenuLayout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(NextButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(OkButton, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(InputPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(InputPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -817,10 +838,10 @@ public class FrozenDistrict extends javax.swing.JDialog {
                 .addComponent(InputPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(34, 34, 34)
                 .addGroup(CashierMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(OkButton, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(NextButton, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(SalesInventoryButton, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(22, 22, 22))
         );
 
@@ -870,29 +891,61 @@ public class FrozenDistrict extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_product_button_7ActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void NextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NextButtonActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+		for (ProductItem item : products) {
+			item.Quantity = 0;
+		}
+		PickedList.clear();
+		updatePickedList();
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+		setProductsActionState(true);
+		TotalInput.setText("0.00");
+		CashInput.setText("0.00");
+		ChangeInput.setText("0.00");
+		NextButton.setEnabled(false);
+    }//GEN-LAST:event_NextButtonActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void OkButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OkButtonActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+		try {
+			// Check if there's any order
+			if (PickedList.isEmpty()) 
+				throw new Exception("Dude, there's no order. You bugging.");
+			// Check if input is blank
+			if (CashInput.getText().trim().equals("")) 
+				throw new Exception("“Please input cash.");
 
-    private void Input1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Input1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_Input1ActionPerformed
+			float total = Float.parseFloat(TotalInput.getText());
+			float cash = Float.parseFloat(CashInput.getText());
 
-    private void Input2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Input2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_Input2ActionPerformed
+			if (cash == 0) throw new Exception("“Please input cash.");
+			if (total > cash) throw new Exception("Insufficient amount.");
 
-    private void Input3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Input3ActionPerformed
+			float changeValue = cash-total;
+			ChangeInput.setText(Float.toString(changeValue));
+			setProductsActionState(false);
+			NextButton.setEnabled(true);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Error cash", JOptionPane.ERROR_MESSAGE);
+		}
+    }//GEN-LAST:event_OkButtonActionPerformed
+
+    private void SalesInventoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SalesInventoryButtonActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_Input3ActionPerformed
+    }//GEN-LAST:event_SalesInventoryButtonActionPerformed
+
+    private void TotalInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TotalInputActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TotalInputActionPerformed
+
+    private void CashInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CashInputActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_CashInputActionPerformed
+
+    private void ChangeInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ChangeInputActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ChangeInputActionPerformed
 
     private void product_button_6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_product_button_6ActionPerformed
         // TODO add your handling code here:
@@ -945,10 +998,9 @@ public class FrozenDistrict extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private static javax.swing.JTextField CashInput;
     private javax.swing.JPanel CashierMenu;
-    private javax.swing.JTextField Input1;
-    private javax.swing.JTextField Input2;
-    private javax.swing.JTextField Input3;
+    private static javax.swing.JTextField ChangeInput;
     private javax.swing.JLabel InputLabel1;
     private javax.swing.JLabel InputLabel2;
     private javax.swing.JLabel InputLabel3;
@@ -958,6 +1010,8 @@ public class FrozenDistrict extends javax.swing.JDialog {
     private javax.swing.JPanel ItemRow1;
     private javax.swing.JPanel ItemRow2;
     private javax.swing.JPanel ItemRow3;
+    private static javax.swing.JButton NextButton;
+    private static javax.swing.JButton OkButton;
     private javax.swing.JPanel Product1;
     private javax.swing.JPanel Product2;
     private javax.swing.JPanel Product3;
@@ -968,9 +1022,8 @@ public class FrozenDistrict extends javax.swing.JDialog {
     private javax.swing.JPanel Product8;
     private javax.swing.JPanel Product9;
     private javax.swing.JLabel RepresentTitle;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private static javax.swing.JButton SalesInventoryButton;
+    private static javax.swing.JTextField TotalInput;
     private javax.swing.JScrollPane jScrollPane1;
     private static javax.swing.JTextArea orderListTextArea;
     private static javax.swing.JButton product_button_1;
@@ -1033,9 +1086,10 @@ class ProductItem {
 		String result = (Quantity <= 0 ? 
 				this.getTextPrice() : 
 				this.getTextPrice() + " * " + Quantity);
+
 		PriceLabel.setText(result);
 		FrozenDistrict.updatePickedList();
-		FrozenDistrict.showToOrderList();
+		FrozenDistrict.refreshPickedListSubtotal();
 	}
 
     void productAction () {
@@ -1046,10 +1100,11 @@ class ProductItem {
 			int getQuantity = Integer.parseInt(input);
 			if (getQuantity < 0) throw new Exception("Invalid range.");
 			Quantity = getQuantity;
-			quantityUpdate();
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Invalid quantity value.", "Error quantity", JOptionPane.ERROR_MESSAGE);
 		}
+
+		quantityUpdate();
     }
 }
 

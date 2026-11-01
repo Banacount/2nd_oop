@@ -1068,12 +1068,12 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="InputPanel1" max="32767" attributes="0"/>
-                      <Component id="jButton3" max="32767" attributes="0"/>
+                      <Component id="SalesInventoryButton" max="32767" attributes="0"/>
                       <Component id="jScrollPane1" max="32767" attributes="0"/>
                       <Group type="102" attributes="0">
-                          <Component id="jButton1" max="32767" attributes="0"/>
+                          <Component id="NextButton" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jButton2" min="-2" pref="137" max="-2" attributes="0"/>
+                          <Component id="OkButton" min="-2" pref="137" max="-2" attributes="0"/>
                       </Group>
                       <Component id="InputPanel2" max="32767" attributes="0"/>
                       <Component id="InputPanel3" max="32767" attributes="0"/>
@@ -1095,11 +1095,11 @@
                   <Component id="InputPanel3" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="jButton2" alignment="3" min="-2" pref="40" max="-2" attributes="0"/>
-                      <Component id="jButton1" alignment="3" min="-2" pref="40" max="-2" attributes="0"/>
+                      <Component id="OkButton" alignment="3" min="-2" pref="40" max="-2" attributes="0"/>
+                      <Component id="NextButton" alignment="3" min="-2" pref="40" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jButton3" min="-2" pref="40" max="-2" attributes="0"/>
+                  <Component id="SalesInventoryButton" min="-2" pref="40" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -1121,7 +1121,7 @@
                 </Property>
                 <Property name="columns" type="int" value="20"/>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Adwaita Sans" size="10" style="0"/>
+                  <Font name="Adwaita Mono" size="12" style="0"/>
                 </Property>
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="f6" green="7e" red="2c" type="rgb"/>
@@ -1144,7 +1144,7 @@
             </Component>
           </SubComponents>
         </Container>
-        <Component class="javax.swing.JButton" name="jButton1">
+        <Component class="javax.swing.JButton" name="NextButton">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="fa" green="e9" red="da" type="rgb"/>
@@ -1156,12 +1156,16 @@
               <Color blue="f6" green="7e" red="2c" type="rgb"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Next"/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="NextButtonActionPerformed"/>
           </Events>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
+          </AuxValues>
         </Component>
-        <Component class="javax.swing.JButton" name="jButton2">
+        <Component class="javax.swing.JButton" name="OkButton">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="fa" green="e9" red="da" type="rgb"/>
@@ -1175,10 +1179,13 @@
             <Property name="text" type="java.lang.String" value="Ok"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="OkButtonActionPerformed"/>
           </Events>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
+          </AuxValues>
         </Component>
-        <Component class="javax.swing.JButton" name="jButton3">
+        <Component class="javax.swing.JButton" name="SalesInventoryButton">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="fa" green="e9" red="da" type="rgb"/>
@@ -1192,8 +1199,11 @@
             <Property name="text" type="java.lang.String" value="Sales Inventory"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton3ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="SalesInventoryButtonActionPerformed"/>
           </Events>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
+          </AuxValues>
         </Component>
         <Container class="javax.swing.JPanel" name="InputPanel1">
 
@@ -1204,7 +1214,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="InputLabel1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="Input1" max="32767" attributes="0"/>
+                      <Component id="TotalInput" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -1214,7 +1224,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="InputLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="Input1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="TotalInput" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
@@ -1233,8 +1243,9 @@
                 <Property name="text" type="java.lang.String" value="Total"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="Input1">
+            <Component class="javax.swing.JTextField" name="TotalInput">
               <Properties>
+                <Property name="editable" type="boolean" value="false"/>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="fa" green="e9" red="da" type="rgb"/>
                 </Property>
@@ -1244,8 +1255,11 @@
                 <Property name="text" type="java.lang.String" value="0.00"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="Input1ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="TotalInputActionPerformed"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
+              </AuxValues>
             </Component>
           </SubComponents>
         </Container>
@@ -1257,8 +1271,8 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="InputLabel2" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="31" max="32767" attributes="0"/>
-                      <Component id="Input2" min="-2" pref="233" max="-2" attributes="0"/>
+                      <EmptySpace pref="32" max="32767" attributes="0"/>
+                      <Component id="CashInput" min="-2" pref="265" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -1268,7 +1282,7 @@
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="InputLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="Input2" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="CashInput" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
@@ -1287,7 +1301,7 @@
                 <Property name="text" type="java.lang.String" value="Cash"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="Input2">
+            <Component class="javax.swing.JTextField" name="CashInput">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="fa" green="e9" red="da" type="rgb"/>
@@ -1298,8 +1312,11 @@
                 <Property name="text" type="java.lang.String" value="0.00"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="Input2ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="CashInputActionPerformed"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
+              </AuxValues>
             </Component>
           </SubComponents>
         </Container>
@@ -1312,7 +1329,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="InputLabel3" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="Input3" max="32767" attributes="0"/>
+                      <Component id="ChangeInput" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -1322,7 +1339,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="InputLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="Input3" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="ChangeInput" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
@@ -1341,8 +1358,9 @@
                 <Property name="text" type="java.lang.String" value="Change"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="Input3">
+            <Component class="javax.swing.JTextField" name="ChangeInput">
               <Properties>
+                <Property name="editable" type="boolean" value="false"/>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="fa" green="e9" red="da" type="rgb"/>
                 </Property>
@@ -1352,8 +1370,11 @@
                 <Property name="text" type="java.lang.String" value="0.00"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="Input3ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ChangeInputActionPerformed"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
+              </AuxValues>
             </Component>
           </SubComponents>
         </Container>
