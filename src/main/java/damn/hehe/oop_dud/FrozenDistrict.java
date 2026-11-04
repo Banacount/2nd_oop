@@ -5,75 +5,16 @@
 package damn.hehe.oop_dud;
 import javax.swing.*;
 import java.util.ArrayList;
+import damn.hehe.oop_dud.SalesInventory;
 
 /**
  *
  * @author excalibur
  */
 public class FrozenDistrict extends javax.swing.JDialog {
-	static ArrayList<int[]> PickedList = new ArrayList<>();
-	static int productId = 0;
-	static float PickedListSubtotal = 0;
-    static ProductItem[] products;
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrozenDistrict.class.getName());
-    
-	// My functions block
-	static void showToOrderList () {
-		String overAll = "";
-		overAll += "Order List\n\n";
-		for (int[] picked : PickedList) {
-			ProductItem item = products[picked[0]];
-			String row = String.format("%-15.15s %7.2f x %2d ------- %8.2f\n",
-										item.Name, item.Price, item.Quantity, item.Price*item.Quantity);
-			overAll += row;
-		}
-		orderListTextArea.setText(overAll);
-	}
-	static void updatePickedList () {
-		// Detect if item is on the list
-		for (ProductItem item : products) {
-			int inPickedList = -1;
-
-			// Remove 0 quantity items
-			for (int[] picked : PickedList) {
-				if (picked[1] <= 0) {
-					PickedList.remove(picked);
-					break;
-				}
-			}
-			// Check if item is already in PickedList
-			for (int[] picked : PickedList) {
-				int idInPickedList = picked[0];
-				if (idInPickedList == item.id) 
-					inPickedList = PickedList.indexOf(picked);
-			}
-			// If already in list just set
-			if (inPickedList > -1) {
-				PickedList.set(inPickedList, new int[]{item.id, item.Quantity});
-				continue;
-			}
-			// Add if not on the list
-			if (item.Quantity > 0 && inPickedList < 0) 
-				PickedList.add(new int[]{item.id, item.Quantity});
-		}
-		showToOrderList();
-		DebugFunctions.printPickedList();
-	}
-	static void refreshPickedListSubtotal () {
-		PickedListSubtotal = 0;
-		for (ProductItem item : products) {
-			float total = item.Price*item.Quantity;
-			PickedListSubtotal += total;
-		}
-
-		TotalInput.setText(String.valueOf(PickedListSubtotal));
-	}
-	static void setProductsActionState (boolean isEnabled) {
-		for (ProductItem item : products) {
-			item.ProductButton.setEnabled(isEnabled);
-		}
-	}
-	// My functions endblock
+	static SalesInventory salesInventoryPanel = new SalesInventory();
+	static JFrame salesInventoryWindow = new JFrame("Sales Inventory");
 
     /**
      * Creates new form TestGUI
@@ -81,8 +22,14 @@ public class FrozenDistrict extends javax.swing.JDialog {
     public FrozenDistrict(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+		salesInventoryWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+		salesInventoryWindow.setSize(651, 408);
+		salesInventoryWindow.setLocationRelativeTo(null);
+		salesInventoryWindow.add(salesInventoryPanel);
+		salesInventoryWindow.setVisible(false);
+		salesInventoryWindow.setResizable(false);
         
-        products = new ProductItem[] {
+        ProductService.products = new ProductItem[] {
             // Ice cream
             new ProductItem(50f, 0, "Vanilla", product_price_1, product_button_1),
             new ProductItem(60f, 0, "Chocolate", product_price_2, product_button_2),
@@ -99,7 +46,7 @@ public class FrozenDistrict extends javax.swing.JDialog {
             new ProductItem(169f, 0, "Sweet Ham", product_price_9, product_button_9),
         };
 
-        for (ProductItem item : products) {
+        for (ProductItem item : ProductService.products) {
             item.afterInit();
 			// click
 			item.ProductButton.addActionListener(e -> {
@@ -893,46 +840,17 @@ public class FrozenDistrict extends javax.swing.JDialog {
 
     private void NextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NextButtonActionPerformed
         // TODO add your handling code here:
-		for (ProductItem item : products) {
-			item.Quantity = 0;
-		}
-		PickedList.clear();
-		updatePickedList();
-
-		setProductsActionState(true);
-		TotalInput.setText("0.00");
-		CashInput.setText("0.00");
-		ChangeInput.setText("0.00");
-		NextButton.setEnabled(false);
+		ProductService.OnAction.handleNext();
     }//GEN-LAST:event_NextButtonActionPerformed
 
     private void OkButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OkButtonActionPerformed
         // TODO add your handling code here:
-		try {
-			// Check if there's any order
-			if (PickedList.isEmpty()) 
-				throw new Exception("Dude, there's no order. You bugging.");
-			// Check if input is blank
-			if (CashInput.getText().trim().equals("")) 
-				throw new Exception("“Please input cash.");
-
-			float total = Float.parseFloat(TotalInput.getText());
-			float cash = Float.parseFloat(CashInput.getText());
-
-			if (cash == 0) throw new Exception("“Please input cash.");
-			if (total > cash) throw new Exception("Insufficient amount.");
-
-			float changeValue = cash-total;
-			ChangeInput.setText(Float.toString(changeValue));
-			setProductsActionState(false);
-			NextButton.setEnabled(true);
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, e.getMessage(), "Error cash", JOptionPane.ERROR_MESSAGE);
-		}
+		ProductService.OnAction.handleOk();
     }//GEN-LAST:event_OkButtonActionPerformed
 
     private void SalesInventoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SalesInventoryButtonActionPerformed
         // TODO add your handling code here:
+		ProductService.OnAction.handleSalesInventory();
     }//GEN-LAST:event_SalesInventoryButtonActionPerformed
 
     private void TotalInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TotalInputActionPerformed
@@ -998,9 +916,9 @@ public class FrozenDistrict extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private static javax.swing.JTextField CashInput;
+    public static javax.swing.JTextField CashInput;
     private javax.swing.JPanel CashierMenu;
-    private static javax.swing.JTextField ChangeInput;
+    public static javax.swing.JTextField ChangeInput;
     private javax.swing.JLabel InputLabel1;
     private javax.swing.JLabel InputLabel2;
     private javax.swing.JLabel InputLabel3;
@@ -1010,8 +928,8 @@ public class FrozenDistrict extends javax.swing.JDialog {
     private javax.swing.JPanel ItemRow1;
     private javax.swing.JPanel ItemRow2;
     private javax.swing.JPanel ItemRow3;
-    private static javax.swing.JButton NextButton;
-    private static javax.swing.JButton OkButton;
+    public static javax.swing.JButton NextButton;
+    public static javax.swing.JButton OkButton;
     private javax.swing.JPanel Product1;
     private javax.swing.JPanel Product2;
     private javax.swing.JPanel Product3;
@@ -1022,10 +940,10 @@ public class FrozenDistrict extends javax.swing.JDialog {
     private javax.swing.JPanel Product8;
     private javax.swing.JPanel Product9;
     private javax.swing.JLabel RepresentTitle;
-    private static javax.swing.JButton SalesInventoryButton;
-    private static javax.swing.JTextField TotalInput;
+    public static javax.swing.JButton SalesInventoryButton;
+    public static javax.swing.JTextField TotalInput;
     private javax.swing.JScrollPane jScrollPane1;
-    private static javax.swing.JTextArea orderListTextArea;
+    public static javax.swing.JTextArea orderListTextArea;
     private static javax.swing.JButton product_button_1;
     private static javax.swing.JButton product_button_2;
     private static javax.swing.JButton product_button_3;
@@ -1056,7 +974,7 @@ public class FrozenDistrict extends javax.swing.JDialog {
 class ProductItem {
     float Price;
     int Quantity = 0;
-	int id = FrozenDistrict.productId++;
+	int id = ProductService.productId++;
     String Name;
     javax.swing.JLabel PriceLabel;
     javax.swing.JButton ProductButton;
@@ -1088,8 +1006,8 @@ class ProductItem {
 				this.getTextPrice() + " * " + Quantity);
 
 		PriceLabel.setText(result);
-		FrozenDistrict.updatePickedList();
-		FrozenDistrict.refreshPickedListSubtotal();
+		ProductService.updateOrderList();
+		ProductService.refreshOrderListSubtotal();
 	}
 
     void productAction () {
@@ -1108,9 +1026,120 @@ class ProductItem {
     }
 }
 
+class ProductService {
+	static ArrayList<int[]> OrderList = new ArrayList<>();
+	static int productId = 0;
+	static float OrderListSubtotal = 0;
+    static ProductItem[] products;
+	static boolean showSalesInventory = false;
+
+	// My functions block
+	static void showToOrderList () {
+		String overAll = "";
+		overAll += "Order List\n\n";
+		for (int[] order : OrderList) {
+			ProductItem item = products[order[0]];
+			String row = String.format("%-15.15s %7.2f x %2d ------- %8.2f\n",
+										item.Name, item.Price, item.Quantity, item.Price*item.Quantity);
+			overAll += row;
+		}
+		FrozenDistrict.orderListTextArea.setText(overAll);
+	}
+	static void updateOrderList () {
+		// Detect if item is on the list
+		for (ProductItem item : products) {
+			int inOrderList = -1;
+
+			// Remove 0 quantity items
+			for (int[] order : OrderList) {
+				if (order[1] <= 0) {
+					OrderList.remove(order);
+					break;
+				}
+			}
+			// Check if item is already in OrderList
+			for (int[] order : OrderList) {
+				int idInOrderList = order[0];
+				if (idInOrderList == item.id) 
+					inOrderList = OrderList.indexOf(order);
+			}
+			// If already in list just set
+			if (inOrderList > -1) {
+				OrderList.set(inOrderList, new int[]{item.id, item.Quantity});
+				continue;
+			}
+			// Add if not on the list
+			if (item.Quantity > 0 && inOrderList < 0) 
+				OrderList.add(new int[]{item.id, item.Quantity});
+		}
+		showToOrderList();
+		DebugFunctions.printOrderList();
+	}
+	static void refreshOrderListSubtotal () {
+		OrderListSubtotal = 0;
+		for (ProductItem item : products) {
+			float total = item.Price*item.Quantity;
+			OrderListSubtotal += total;
+		}
+
+		FrozenDistrict.TotalInput.setText(String.valueOf(OrderListSubtotal));
+	}
+	static void setProductsActionState (boolean isEnabled) {
+		for (ProductItem item : products) {
+			item.ProductButton.setEnabled(isEnabled);
+		}
+	}
+
+	static class OnAction {
+		static void handleOk () {
+			try {
+				// Check if there's any order
+				if (ProductService.OrderList.isEmpty()) 
+					throw new Exception("Dude, there's no order. You bugging.");
+				// Check if input is blank
+				if (FrozenDistrict.CashInput.getText().trim().equals("")) 
+					throw new Exception("“Please input cash.");
+
+				float total = Float.parseFloat(FrozenDistrict.TotalInput.getText());
+				float cash = Float.parseFloat(FrozenDistrict.CashInput.getText());
+
+				if (cash == 0) throw new Exception("“Please input cash.");
+				if (total > cash) throw new Exception("Insufficient amount.");
+
+				float changeValue = cash-total;
+				FrozenDistrict.ChangeInput.setText(Float.toString(changeValue));
+				ProductService.setProductsActionState(false);
+				FrozenDistrict.NextButton.setEnabled(true);
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, e.getMessage(), "Error cash", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+
+		static void handleNext () {
+			for (ProductItem item : ProductService.products) {
+				item.Quantity = 0;
+			}
+			ProductService.OrderList.clear();
+			ProductService.updateOrderList();
+
+			ProductService.setProductsActionState(true);
+			FrozenDistrict.TotalInput.setText("0.00");
+			FrozenDistrict.CashInput.setText("0.00");
+			FrozenDistrict.ChangeInput.setText("0.00");
+			FrozenDistrict.NextButton.setEnabled(false);
+		}
+		
+		static void handleSalesInventory () {
+			showSalesInventory = !showSalesInventory;
+			FrozenDistrict.salesInventoryWindow.setVisible(showSalesInventory);
+		}
+	}
+	// My functions endblock
+}
+
 class DebugFunctions {
-	static void printPickedList () {
-		for (int[] value : FrozenDistrict.PickedList) {
+	static void printOrderList () {
+		for (int[] value : ProductService.OrderList) {
 			int itemId = value[0];
 			int itemQuantity = value[1];
 
