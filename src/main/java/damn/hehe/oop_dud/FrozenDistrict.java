@@ -1153,6 +1153,7 @@ class ProductService {
             calculateSalesInventory();
 			for (ProductItem item : ProductService.products) {
 				item.Quantity = 0;
+                item.afterInit();
 			}
 			ProductService.OrderList.clear();
 			ProductService.updateOrderList();
