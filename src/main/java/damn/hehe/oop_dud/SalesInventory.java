@@ -36,7 +36,7 @@ public class SalesInventory extends javax.swing.JPanel {
         RepresentTitle.setText("Frozen District");
 
         SalesInventoryTextArea.setColumns(20);
-        SalesInventoryTextArea.setFont(new java.awt.Font("Adwaita Mono", 0, 13)); // NOI18N
+        SalesInventoryTextArea.setFont(new java.awt.Font("Adwaita Mono", 0, 15)); // NOI18N
         SalesInventoryTextArea.setForeground(new java.awt.Color(0, 153, 204));
         SalesInventoryTextArea.setRows(5);
         SalesInventoryTextArea.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));

@@ -45,12 +45,12 @@ public class FrozenDistrict extends javax.swing.JDialog {
             new ProductItem(80f, 0, "Longaniza", product_price_8, product_button_8),
             new ProductItem(169f, 0, "Sweet Ham", product_price_9, product_button_9),
         };
+        ProductService.init();
+        ProductService.writeSalesInventory();
 
         for (ProductItem item : ProductService.products) {
             item.afterInit();
-			// click
 			item.ProductButton.addActionListener(e -> {
-				System.out.println("Giving backshots to " + item.Name);
 				item.productAction();
 			});
         }
@@ -1031,8 +1031,18 @@ class ProductService {
 	static int productId = 0;
 	static float OrderListSubtotal = 0;
     static ProductItem[] products;
+    static ProductItem[] salesInventoryValue;
+    static float salesInventoryTotal = 0;
 	static boolean showSalesInventory = false;
 
+    static void init () {
+        salesInventoryValue = new ProductItem[products.length];
+        for (int i = 0; i < products.length; i++) {
+            ProductItem item = products[i];
+            salesInventoryValue[i] = new ProductItem(item.Price, 0, item.Name, item.PriceLabel, item.ProductButton);
+        }
+    }
+    
 	// My functions block
 	static void showToOrderList () {
 		String overAll = "";
@@ -1089,6 +1099,30 @@ class ProductService {
 			item.ProductButton.setEnabled(isEnabled);
 		}
 	}
+	static void writeSalesInventory () {
+		String overAll = "";
+		overAll += "Order List\n\n";
+        for (ProductItem item : salesInventoryValue) {
+			String row = String.format("%-20.20s %7.2f %4d %12.2f\n",
+										item.Name, item.Price, item.Quantity, item.Price*item.Quantity);
+			overAll += row;
+		}
+        overAll += "\n\n";
+        String totalInventoryString = String.format("%-20.20s %7s %4s %12.2f\n",
+                                    "Total", "", "", salesInventoryTotal);
+        overAll += totalInventoryString;
+		FrozenDistrict.salesInventoryPanel.SalesInventoryTextArea.setText(overAll);
+	}
+	static void calculateSalesInventory () {
+        salesInventoryTotal = 0;
+        for (int i = 0; i < products.length; i++) {
+            ProductItem item = products[i];
+            ProductItem itemOnInventory = salesInventoryValue[i];
+            itemOnInventory.Quantity += item.Quantity;
+            salesInventoryTotal += itemOnInventory.Price * itemOnInventory.Quantity;
+		}
+        writeSalesInventory();
+	}
 
 	static class OnAction {
 		static void handleOk () {
@@ -1116,6 +1150,7 @@ class ProductService {
 		}
 
 		static void handleNext () {
+            calculateSalesInventory();
 			for (ProductItem item : ProductService.products) {
 				item.Quantity = 0;
 			}
@@ -1130,8 +1165,13 @@ class ProductService {
 		}
 		
 		static void handleSalesInventory () {
+            JFrame salesInventoryWindow = FrozenDistrict.salesInventoryWindow;
 			showSalesInventory = !showSalesInventory;
-			FrozenDistrict.salesInventoryWindow.setVisible(showSalesInventory);
+            if (showSalesInventory) 
+                FrozenDistrict.SalesInventoryButton.setText("Close Inventory");
+            else 
+                FrozenDistrict.SalesInventoryButton.setText("Sales Inventory");
+			salesInventoryWindow.setVisible(showSalesInventory);
 		}
 	}
 	// My functions endblock
