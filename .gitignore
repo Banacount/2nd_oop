@@ -29,6 +29,7 @@ out/
 .settings/
 .factorypath
 .metadata/
+*.vim
 
 # Compiled Java files
 *.class
